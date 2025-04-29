@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -17,7 +18,10 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',
@@ -44,5 +48,28 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->id)) {
+                $user->id = (string) Str::uuid();
+            }
+        });
+    }
+
+
+    public function resources()
+    {
+        return $this->hasMany(Resource::class, 'owner_id');
+    }
+
+   
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
     }
 }
