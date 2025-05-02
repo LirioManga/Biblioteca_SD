@@ -25,6 +25,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'user_type'
     ];
 
     /**
@@ -67,9 +68,13 @@ class User extends Authenticatable
         return $this->hasMany(Resource::class, 'owner_id');
     }
 
-   
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class);
     }
 }
