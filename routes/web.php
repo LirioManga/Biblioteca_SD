@@ -4,8 +4,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('admin/userResorces');
 });
+
 Route::post('/admin/utilizadores/registar', [UserController::class, 'store']);
 Route::get('/admin/utilizadores/visualizar', [UserController::class, 'show']);
 Route::put('/admin/utilizadores/actualizar', [UserController::class, 'update']);
