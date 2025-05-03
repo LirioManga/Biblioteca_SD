@@ -1,0 +1,127 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
+class UserController extends Controller
+{
+    public function store(Request $request)
+    {
+        try {
+
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'user_type' => 'required|in:admin,student',
+                'gender' => 'nullable|string',
+                'birthdate' => 'nullable|date',
+                'phone' => 'nullable|string|max:20',
+                'address' => 'nullable|string|max:255',
+            ]);
+
+            $user = User::create([
+                'id' => Str::uuid(),
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['email']),
+                'user_type' => $validated['user_type'],
+            ]);
+
+            $profile = $user->profile()->create([
+                'id' => Str::uuid(),
+                'gender' => $validated['gender'] ?? null,
+                'birthdate' => $validated['birthdate'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'address' => $validated['address'] ?? null,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Utilizador registado com sucesso',
+            ]);
+        } catch (Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao registar o utilizador',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function search($id)
+    {
+        try {
+            $user = User::with('profile')->findOrFail($id);
+
+            return response()->json([
+                'status' => true,
+                'data' => $user
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Utilizador não encontrado',
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+
+    public function show()
+    {
+        try {
+            $users = User::with('profile')->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $users
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao buscar utilizadores',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => 'required|exists:users,id',
+                'name' => 'sometimes|string|max:255',
+                'email' => 'sometimes|email|unique:users,email,',
+                'user_type' => 'sometimes|in:admin,student',
+                'gender' => 'nullable|string',
+                'birthdate' => 'nullable|date',
+                'phone' => 'nullable|string|max:20',
+                'address' => 'nullable|string|max:255',
+            ]);
+
+            $user = User::findOrFail($validated['id']);
+            $user->update($request->only(['name', 'email', 'user_type']));
+
+            if ($user->profile) {
+                $user->profile->update($request->only(['gender', 'birthdate', 'phone', 'address']));
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Utilizador actualizado com sucesso'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao actualizar o utilizador',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+}

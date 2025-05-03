@@ -12,7 +12,17 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         //
+
+        $middleware->validateCsrfTokens(except: [
+            '/admin/utilizadores/registar',
+            '/admin/utilizadores/visualizar',
+            '/admin/utilizadores/actualizar',
+            '/admin/utilizadores/desativar/{id}',
+            '/admin/utilizadores/buscar/{id}',
+    
+        ]);
     })
+    
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
