@@ -1,15 +1,69 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.post');
+Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+
+
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin', [UserController::class, 'admin'])->name('admin');
+    Route::get('/admin/inicio', [UserController::class, 'admin'])->name('admin');
+    Route::get('/admin/estudantes', [UserController::class, 'admin'])->name('admin');
+    Route::get('/admin/recursos', [UserController::class, 'admin'])->name('admin');
+    Route::get('/admin/perfil', [UserController::class, 'admin'])->name('admin');
+    
+    /* -------------------------------------- Utilizadores ------------------------------------- */
+    Route::post('/admin/utilizadores/registar', [UserController::class, 'store']);
+    Route::get('/admin/utilizadores/visualizar', [UserController::class, 'show']);
+    Route::put('/admin/utilizadores/actualizar', [UserController::class, 'update']);
+    // Route::post('/admin/utilizadores/desativar/{id}', [UserController::class, 'destroy']);
+    Route::get('/admin/utilizadores/buscar/{id}', [UserController::class, 'search']);
+
+    /* -------------------------------------- Recursos ------------------------------------- */
+
+    Route::post('/admin/recurso/registar', [ResourceController::class, 'store']);
+    Route::get('/admin/recurso/visualizar', [ResourceController::class, 'show']);
+    Route::put('/admin/recurso/actualizar', [ResourceController::class, 'update']);
+    Route::delete('/admin/recurso/excluir/{id}', [ResourceController::class, 'destroy']);
+    Route::get('/admin/recurso/buscar/{id}', [ResourceController::class, 'search']);
+    Route::get('/admin/recurso/baixar/{id}', [ResourceController::class, 'download']);
+
+    /* -------------------------------------- Testando middleware ------------------------------------- */
+
+});
+
+Route::middleware(['auth', 'student'])->group(function () {
+    /* -------------------------------------- Recursos --------------------------------------- */
+
+
+    /* -------------------------------------- Requisitar Recurso------------------------------- */
+    Route::post('/student/recurso/devolver', [ReservationController::class, 'returnResource']);
+    Route::post('/student/recurso/cancelar', [ReservationController::class, 'cancelReservation']);
+    Route::post('/student/recurso/requisitar', [ReservationController::class, 'requestResource']);
+    Route::post('/student/requisicoes/feitas-por-mim', [ReservationController::class, 'viewMyRequests']);
+    Route::post('/student/requisicoes/para-meus-recursos', [ReservationController::class, 'viewRequestsToMyResources']);
+    Route::post('/student/recurso/registar', [ResourceController::class, 'store']);
+    Route::get('/student/recurso/visualizar', [ResourceController::class, 'show']);
+    Route::post('/student/recurso/actualizar', [ResourceController::class, 'update']);
+    Route::delete('/student/recurso/excluir/{id}', [ResourceController::class, 'destroy']);
+    Route::get('/student/recurso/buscar/{id}', [ResourceController::class, 'search']);
+    Route::get('/student/recurso/baixar/{id}', [ResourceController::class, 'download']);
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -17,4 +71,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
