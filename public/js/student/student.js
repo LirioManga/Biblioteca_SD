@@ -1,7 +1,7 @@
 const routes = {
     "/student": "inicio",
     "/student/inicio": "inicio",
-    "/student/requisicoes": "requisicoes",
+    "/student/meus-recursos": "meus-recursos",
     "/student/recursos": "recursos",
     "/student/perfil": "perfil",
   };

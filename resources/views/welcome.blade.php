@@ -95,12 +95,12 @@
                         </li>
                         <li>
                             <a href="{{ route('register') }}" class="btn-outline inline-block px-5 py-1.5 rounded-sm">
-                                Cadastrar
+                                Registar-se
                             </a>
                         </li>
                     </ul>
                 </div>
-                <div class="bg-white border border relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden book-image-container">
+                <div class="bg-white border border rouded-r-lg relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-lg lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden book-image-container">
                     <div class="absolute inset-0 flex items-center justify-center p-4 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg">
                         <img src="{{ asset('img/ler.jpg') }}" alt="Pessoa lendo um livro na biblioteca" class="max-h-full max-w-full object-scale-down">
                     </div>

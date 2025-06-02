@@ -47,6 +47,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'student'])->group(function () {
+    Route::get('/student', [UserController::class, 'student'])->name('student');
+    Route::get('/student/inicio', [UserController::class, 'student'])->name('student');
+    Route::get('/student/meus-recursos', [UserController::class, 'student'])->name('student');
+    Route::get('/student/recursos', [UserController::class, 'student'])->name('student');
+    Route::get('/student/perfil', [UserController::class, 'student'])->name('student');
     /* -------------------------------------- Recursos --------------------------------------- */
 
 

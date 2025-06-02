@@ -15,7 +15,7 @@ class UserController extends Controller
     }
 
     public function student(){
-        return view('student');
+        return view('student.index');
     }
     public function store(Request $request)
     {
