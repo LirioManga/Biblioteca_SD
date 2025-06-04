@@ -22,6 +22,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',
@@ -48,17 +49,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($user) {
-            if (empty($user->id)) {
-                $user->id = (string) Str::uuid();
-            }
-        });
     }
 
     public function resources()

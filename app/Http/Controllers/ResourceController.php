@@ -13,39 +13,84 @@ use Illuminate\Support\Facades\Storage;
 
 class ResourceController extends Controller
 {
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'title' => 'required|string|max:255',
+    //         'description' => 'nullable|string',
+    //         'type' => 'required|string',
+    //         'file' => 'nullable|file|mimes:pdf,doc,docx',
+    //         'image' => 'nullable|image|max:2048',
+    //     ]);
+
+    //     $resource = new Resource($validated);
+    //     if (Auth::check()) {
+    //         $resource->owner_id = Auth::user()->id;
+    //     } else {
+    //         $resource->owner_id = $request->input('owner_id');
+    //         // $resource->owner_id = '1b341d40-1c04-40cc-8aae-29d3dc7dadf0';
+    //     }
+
+    //     if ($request->hasFile('file_path')) {
+    //         $resource->file_path = $request->file('file_path')->store('resources/files');
+    //     }
+
+    //     if ($request->hasFile('image_path')) {
+    //         $resource->image_path = $request->file('image_path')->store('resources/images');
+    //     }
+
+    //     $resource->save();
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Recurso registado com sucesso!',
+    //         'data' => $resource
+    //     ]);
+    // }
+
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'type' => 'required|string',
-            'file' => 'nullable|file|mimes:pdf,doc,docx',
-            'image' => 'nullable|image|max:2048',
-        ]);
+    { 
 
-        $resource = new Resource($validated);
-        if (Auth::check()) {
-            $resource->owner_id = Auth::user()->id;
-        } else {
-            // $resource->owner_id = $request->input('owner_id');
-            $resource->owner_id = '1b341d40-1c04-40cc-8aae-29d3dc7dadf0'; // so para testes
+        try{
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'type' => 'required|string',
+                'file_path' => 'required|file|mimes:pdf,doc,docx,ppt,pptx',
+                'image_path' => 'nullable|image|max:2048',
+            ]);
+    
+            $resource = new Resource();
+            $resource->title = $validated['title'];
+            $resource->description = $validated['description'] ?? null;
+            $resource->type = $validated['type'];
+    
+            // Salvar arquivos
+            if ($request->hasFile('file_path')) {
+                $resource->file_path = $request->file('file_path')->store('resources/files', 'public');
+            }
+    
+            if ($request->hasFile('image_path')) {
+                $resource->image_path = $request->file('image_path')->store('resources/images', 'public');
+            }
+    
+            // Associar o recurso ao usuário autenticado
+            $resource->owner_id = Auth::user()->id; // Seguro e garante que o usuário existe
+    
+            $resource->save();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Recurso registado com sucesso!',
+                'data' => $resource
+            ]);
+        }catch(Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao registar o recurso: ' . $e->getMessage()
+            ]);
         }
-
-        if ($request->hasFile('file_path')) {
-            $resource->file_path = $request->file('file_path')->store('resources/files');
-        }
-
-        if ($request->hasFile('image_path')) {
-            $resource->image_path = $request->file('image_path')->store('resources/images');
-        }
-
-        $resource->save();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Recurso registado com sucesso!',
-            'data' => $resource
-        ]);
+       
     }
 
     public function update(Request $request)
@@ -159,7 +204,7 @@ class ResourceController extends Controller
             $resource->owner_name = $owner ? $owner->name : null;
             return $resource;
         });
-    
+
         return response()->json([
             'message' => 'Lista de recursos',
             'data' => $resources
@@ -181,5 +226,4 @@ class ResourceController extends Controller
             ]);
         }
     }
-
 }

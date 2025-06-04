@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Biblioteca | Estudante</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -29,40 +30,6 @@
             <span class="ms-3">Inicio</span>
           </a>
         </li>
-
-        <!-- E-commerce Dropdown -->
-        <!-- <li>
-          <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg hover:bg-gray-200 group" aria-controls="ecommerce-dropdown">
-            <i class="fas fa-shopping-cart text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
-            <span class="flex-1 ms-3 text-left whitespace-nowrap">E-commerce</span>
-            <i class="fas fa-chevron-down w-3 h-3"></i>
-          </button>
-          <ul id="ecommerce-dropdown" class="hidden py-2 space-y-2">
-            <li>
-              <a href="#" class="flex items-center w-full p-2 text-gray-900 rounded-lg pl-11 hover:bg-gray-200">Produtos</a>
-            </li>
-            <li>
-              <a href="#" class="flex items-center w-full p-2 text-gray-900 rounded-lg pl-11 hover:bg-gray-200">Vendas</a>
-            </li>
-            <li>
-              <a href="#" class="flex items-center w-full p-2 text-gray-900 rounded-lg pl-11 hover:bg-gray-200">Faturas</a>
-            </li>
-          </ul>
-        </li> -->
-
-        <!-- Kanban -->
-
-
-        <!-- Mensagens -->
-        <!-- <li>
-          <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
-            <i class="fas fa-envelope text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
-            <span class="flex-1 ms-3 whitespace-nowrap">Mensagens</span>
-            <span class="w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full">3</span>
-          </a>
-        </li> -->
-
-        <!-- Usuários -->
         <li>
           <a href="/student/meus-recursos" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
             <i class="fas fa-columns text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
@@ -288,70 +255,73 @@
       </div>
     </section>
     <section id="meus-recursos" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-gray-800">Meus Recursos</h1>
+      <div id="meus-recursos-principal">
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="text-2xl font-bold text-gray-800">Meus Recursos</h1>
 
-        <!-- Campo de pesquisa alinhado à direita -->
-        <div class="flex items-center">
-          <div class="relative">
-            <input type="text" placeholder="Pesquisar estudantes..."
-              class="pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <button class="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700 focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+          <!-- Botão Adicionar e Campo de Pesquisa -->
+          <div class="flex items-center space-x-4">
+            <!-- Botão Adicionar Recurso -->
+            <button type="button" onclick="adicionarRecurso();" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+              <i class="fas fa-plus mr-2"></i>
+              Adicionar Recurso
             </button>
+
+            <!-- Campo de pesquisa -->
+            <div class="relative">
+              <input type="text" placeholder="Pesquisar recursos..."
+                class="pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <button class="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-solid border border-[#ddd] rounded-md p-4 bg-white">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Disponibilidade</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <!-- Exemplo de linha de recurso -->
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">Introdução à Programação</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Livro</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      Disponível
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15/06/2023</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2 flex justify-center">
+                    <button onclick="editarRecurso();" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                      Editar
+                    </button>
+                    <button onclick="excluirRecurso();" class="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <div class="border-solid border border-[#ddd] rounded-md p-4 bg-white">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estudante</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acções</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
-                      <span class="text-blue-600 font-medium">LM</span>
-                    </div>
-                    <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900">Lirio Manga</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">liriomanga@gmail.com</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">847777777</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                    Bloqueado
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2  flex justify-center">
-                  <button onclick="aprovarNovoEstudante();" class="text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                    Aprovar
-                  </button>
-                  <button onclick="bloquearEstudante();" class="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                    Bloquear
-                  </button>
-                  <button onclick="editarDadosEstudante();" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                    Editar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+
+      @include('student.partials.addResource')
     </section>
     <section id="perfil" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
       <div class="flex justify-between items-center mb-4">
@@ -386,6 +356,8 @@
         e.stopPropagation();
       });
     });
+
+ 
   </script>
 </body>
 

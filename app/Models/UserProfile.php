@@ -14,15 +14,7 @@ class UserProfile extends Model
 
     protected $fillable = ['id', 'user_id', 'gender', 'birthdate', 'phone', 'address'];
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            if (empty($model->id)) {
-                $model->id = (string) \Illuminate\Support\Str::uuid();
-            }
-        });
-    }
+   
 
     public function user()
     {

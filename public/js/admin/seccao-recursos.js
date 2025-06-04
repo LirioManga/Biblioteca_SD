@@ -5,3 +5,4 @@ async function eliminarRecurso() {
 async function visualizarRecurso() {
     alert("Visualizar recurso ainda não implementado.");
 }
+
