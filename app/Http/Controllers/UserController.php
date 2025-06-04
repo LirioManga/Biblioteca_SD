@@ -22,35 +22,21 @@ class UserController extends Controller
         return view('auth.forgot-password');
     }
 
+    public function create()
+    {
+        return view('auth.register');
+    }
+
     public function store(Request $request)
     {
         try {
-
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
-                'user_type' => 'required|in:admin,student',
-                'gender' => 'nullable|string',
-                'birthdate' => 'nullable|date',
-                'phone' => 'nullable|string|max:20',
-                'address' => 'nullable|string|max:255',
-            ]);
-
             $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['email']),
-                'user_type' => $validated['user_type'],
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('email')),
             ]);
 
-            $profile = $user->profile()->create([
-                'id' => Str::uuid(),
-                'gender' => $validated['gender'] ?? null,
-                'birthdate' => $validated['birthdate'] ?? null,
-                'phone' => $validated['phone'] ?? null,
-                'address' => $validated['address'] ?? null,
-            ]);
-
+           
             return response()->json([
                 'status' => true,
                 'message' => 'Utilizador registado com sucesso',

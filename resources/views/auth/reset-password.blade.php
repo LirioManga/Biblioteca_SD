@@ -42,11 +42,11 @@
 <body>
     <div class="email-container">
         <h2>Olá, {{ $nome }}</h2>
-        <p>Você solicitou a recuperação da sua senha. Aqui está sua nova senha temporária:</p>
+        <p>Você solicitou a recuperação da sua palavra-passe. Aqui está sua nova palavra-passe temporária:</p>
 
         <h3 style="color:#2d3748;">{{ $novaSenha }}</h3>
 
-        <p>Por razões de segurança, recomendamos que você altere essa senha assim que possível.</p>
+        <p>Por razões de segurança, recomendamos que você altere essa palavra-passe assim que possível.</p>
 
         <p class="footer">
             Se você não solicitou essa recuperação, por favor ignore este e-mail ou entre em contato com nosso suporte.

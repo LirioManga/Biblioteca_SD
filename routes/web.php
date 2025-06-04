@@ -18,6 +18,8 @@ Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('lo
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 Route::put('/recover-password', [PasswordController::class, 'recover'])->name('recover-password');
 Route::get('/recover-password', [UserController::class, 'showRecoverForm'])->name('recover-password.form');
+Route::get('/register', [UserController::class, 'create'])->name('register');
+Route::post('/register-user', [UserController::class, 'store'])->name('register-user');
 
 
 Route::middleware(['auth', 'admin'])->group(function () {

@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Registar - Biblioteca</title>
+    <title>Biblioteca - Registar-se</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Ícones do Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -23,7 +24,7 @@
             <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Criar uma conta</h2>
 
             <div class="mt-10">
-                <form class="space-y-6" action="#" method="POST">
+                <form id="register-form" class="space-y-6">
                     <!-- Name -->
                     <div>
                         <label for="name" class="block text-sm/6 font-medium text-gray-900">Nome</label>
@@ -40,6 +41,7 @@
                             <input type="email" name="email" id="email" autocomplete="email" required 
                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                         </div>
+                        <div id="feedback-email" class="mt-4 text-sm text-center"></div>
                     </div>
 
                     <!-- Password -->
@@ -52,6 +54,7 @@
                                 <i id="toggleIconPassword" class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <div id="feedback-password" class="mt-4 text-sm text-center"></div>
                     </div>
 
                     <!-- Confirm Password -->
@@ -61,16 +64,17 @@
                             <input type="password" name="password_confirmation" id="password_confirmation" autocomplete="new-password" required 
                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 pr-10">
                             <button type="button" onclick="togglePasswordVisibility('password_confirmation')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
-                                <i id="toggleIconPasswordConfirmation" class="fas fa-eye"></i>
+                                <i id="toggleIconPassword_confirmation" class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <div id="feedback-password_confirmation" class="mt-4 text-sm text-center"></div>
                     </div>
 
                     <div>
                         <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Registar</button>
                     </div>
                 </form>
-
+                <div id="registered-success" class="mt-4 text-sm text-center"></div>
                 <p class="mt-10 text-center text-sm/6 text-gray-500">
                     Já tem uma conta?
                     <a href="{{ route('login') }}" class="font-semibold text-indigo-600 hover:text-indigo-500">Iniciar sessão</a>
@@ -78,7 +82,7 @@
             </div>
         </div>
     </div>
-
+    <script src="{{ asset('js/users/users.js') }}"></script>
     <script>
         function togglePasswordVisibility(fieldId) {
             const passwordInput = document.getElementById(fieldId);
