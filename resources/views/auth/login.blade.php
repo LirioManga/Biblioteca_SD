@@ -38,7 +38,7 @@
                         <div class="flex items-center justify-between">
                             <label for="password" class="block text-sm/6 font-medium text-gray-900">Palavra-passe</label>
                             <div class="text-sm">
-                                <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Esqueceu a senha?</a>
+                                <a href="{{ url('/recover-password') }}" class="font-semibold text-indigo-600 hover:text-indigo-500">Esqueceu a palavra-passe?</a>
                             </div>
                         </div>
                         <div class="mt-2 relative">

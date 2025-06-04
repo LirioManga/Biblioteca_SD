@@ -17,6 +17,11 @@ class UserController extends Controller
     public function student(){
         return view('student.index');
     }
+
+    public function showRecoverForm(){
+        return view('auth.forgot-password');
+    }
+
     public function store(Request $request)
     {
         try {
@@ -32,7 +37,6 @@ class UserController extends Controller
             ]);
 
             $user = User::create([
-                'id' => Str::uuid(),
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['email']),
@@ -78,7 +82,6 @@ class UserController extends Controller
             ], 404);
         }
     }
-
 
     public function show()
     {

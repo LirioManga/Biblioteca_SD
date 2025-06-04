@@ -75,7 +75,7 @@ class ResourceController extends Controller
             }
     
             // Associar o recurso ao usuário autenticado
-            $resource->owner_id = Auth::user()->id; // Seguro e garante que o usuário existe
+            $resource->owner_id = Auth::user()->id;
     
             $resource->save();
     

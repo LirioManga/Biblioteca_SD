@@ -9,12 +9,9 @@ class UserProfile extends Model
 {
     use HasFactory;
 
-    public $incrementing = false;
-    protected $keyType = 'string';
-
     protected $fillable = ['id', 'user_id', 'gender', 'birthdate', 'phone', 'address'];
 
-   
+
 
     public function user()
     {

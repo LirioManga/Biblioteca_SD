@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ResourceController;
@@ -15,8 +16,8 @@ Route::get('/', function () {
 Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.post');
 Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-
-
+Route::post('/recover-password', [PasswordController::class, 'recover'])->name('recover-password');
+Route::get('/recover-password', [UserController::class, 'showRecoverForm'])->name('recover-password.form');
 
 
 Route::middleware(['auth', 'admin'])->group(function () {
