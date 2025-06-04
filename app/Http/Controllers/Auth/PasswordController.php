@@ -31,7 +31,7 @@ class PasswordController extends Controller
         return back()->with('status', 'password-updated');
     }
 
-    public function reset(Request $request)
+    public function recover(Request $request)
     {
         try {
             $user = User::where('email', $request->email)->first();
