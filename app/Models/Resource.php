@@ -17,6 +17,7 @@ class Resource extends Model
         'type',
         'owner_id',
         'file_path',
+        'available',
        
     ];
     protected $casts = [

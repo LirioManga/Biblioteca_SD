@@ -16,122 +16,159 @@ class ResourceController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('Available value: ' . $request->input('available'));
+        Log::info('Boolean conversion: ' . ($request->boolean('available') ? 'true' : 'false'));
         try {
-           
+
             $file = $request->file('file_path');
-        $fileName = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('recursos/arquivos', $fileName, 'public');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('recursos/arquivos', $fileName, 'public');
 
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_img_' . $image->getClientOriginalName();
-            $imagePath = $image->storeAs('recursos/imagens', $imageName, 'public');
-        }
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_img_' . $image->getClientOriginalName();
+                $imagePath = $image->storeAs('recursos/imagens', $imageName, 'public');
+            }
 
-        $recurso = Resource::create([
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'type' => $request->input('type'),
-            'file_path' => $filePath,
-            'available' => $request->boolean('available'), 
-            'owner_id' => auth()->id(), 
-        ]);
-           
-            Log::info('Recurso adicionado: ' . json_encode($recurso));
+            $recurso = Resource::create([
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'type' => $request->input('type'),
+                'file_path' => $filePath,
+                'available' => $request->boolean('available'),
+                'owner_id' => auth()->id(),
+            ]);
+
+            // Log::info('Recurso adicionado: ' . json_encode($recurso));
 
             return response()->json([
-                'status' => true,
+                'success' => true,
                 'message' => 'Recurso adicionado com sucesso!',
                 'recurso' => $recurso,
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => 'Erro ao adicionar recurso: ' . $e->getMessage(),
             ]);
         }
     }
 
-    public function update(Request $request)
+    public function edit($resourceId)
     {
-        // Log::info('Dados recebidos: ' . json_encode($request->all()));
-        // Log::info('ID do recurso: ' . $id);
         try {
-            // Validação dos dados recebidos
-            $validated = $request->validate([
-                'id' => 'required|integer|exists:resources,id',
-                'title' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'type' => 'required|string',
-                'file' => 'nullable|file|mimes:pdf,doc,docx',
-                'image' => 'nullable|image|max:2048',
-            ]);
+            $resource = Resource::findOrFail($resourceId);
 
-            $resource = Resource::findOrFail($validated['id']);
-
-            // if (Auth::check() && Auth::id() !== $resource->owner_id) {
-            //     return response()->json([
-            //         'status' => false,
-            //         'message' => 'Você não tem permissão para actualizar este recurso.'
-            //     ]);
-            // }
-
-            if ($request->hasFile('file')) {
-                if ($resource->file_path && Storage::exists($resource->file_path)) {
-                    Storage::delete($resource->file_path);
-                }
-                $resource->file_path = $request->file('file')->store('resources/files');
+            // Verifica se o usuário autenticado é o proprietário do recurso
+            if (Auth::check() && Auth::id() !== $resource->owner_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você não tem permissão para editar este recurso.'
+                ], 403);
             }
-
-            if ($request->hasFile('image')) {
-                if ($resource->image_path && Storage::exists($resource->image_path)) {
-                    Storage::delete($resource->image_path);
-                }
-                $resource->image_path = $request->file('image')->store('resources/images');
-            }
-
-            $resource->title = $validated['title'];
-            $resource->description = $validated['description'] ?? $resource->description;
-            $resource->type = $validated['type'];
-
-            $resource->save();
 
             return response()->json([
-                'status' => true,
-                'message' => 'Recurso atualizado com sucesso!',
+                'success' => true,
                 'data' => $resource
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => false,
-                'message' => 'Erro ao atualizar o recurso: ' . $e->getMessage()
+                'success' => false,
+                'message' => 'Erro ao buscar o recurso: ' . $e->getMessage()
+            ], 404);
+        }
+    }
+
+    public function update(Request $request, $resourceId)
+    {
+        try {
+            $resource = Resource::findOrFail($resourceId);
+            
+            if (Auth::id() !== $resource->owner_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você não tem permissão para atualizar este recurso.'
+                ], 403);
+            }
+    
+            $request->validate([
+                'title' => 'sometimes|required|string|max:255',
+                'description' => 'sometimes|required|string',
+                'type' => 'sometimes|required|string',
+                'file_path' => 'sometimes|file',
+                'image' => 'sometimes|image',
+                'available' => 'sometimes|boolean',
             ]);
+    
+            $data = $request->only(['title', 'description', 'type', 'available']);
+    
+            if ($request->hasFile('file_path')) {
+                // Remove o arquivo antigo se existir
+                if ($resource->file_path && Storage::disk('public')->exists($resource->file_path)) {
+                    Storage::disk('public')->delete($resource->file_path);
+                }
+                
+                $file = $request->file('file_path');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $data['file_path'] = $file->storeAs('recursos/arquivos', $fileName, 'public');
+            }
+    
+            if ($request->hasFile('image')) {
+                // Remove a imagem antiga se existir
+                if ($resource->image_path && Storage::disk('public')->exists($resource->image_path)) {
+                    Storage::disk('public')->delete($resource->image_path);
+                }
+                
+                $image = $request->file('image');
+                $imageName = time() . '_img_' . $image->getClientOriginalName();
+                $data['image_path'] = $image->storeAs('recursos/imagens', $imageName, 'public');
+            }
+    
+            $resource->update($data);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Recurso atualizado com sucesso!',
+                'data' => $resource,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao atualizar recurso: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
     public function destroy($id)
     {
         try {
-            $resource = Resource::findOrFail($id);
-            if ($resource->file_path && Storage::exists($resource->file_path)) {
-                Storage::delete($resource->file_path);
+            $recurso = Resource::findOrFail($id);
+            
+            // Verifica se o usuário é o dono do recurso
+            if ($recurso->owner_id !== auth()->id()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Você não tem permissão para excluir este recurso.',
+                ], 403);
             }
-
-            if ($resource->image_path && Storage::exists($resource->image_path)) {
-                Storage::delete($resource->image_path);
+    
+            // Remove os arquivos associados
+            Storage::disk('public')->delete($recurso->file_path);
+            if ($recurso->image_path) {
+                Storage::disk('public')->delete($recurso->image_path);
             }
-
-            $resource->delete();
-
+    
+            $recurso->delete();
+    
             return response()->json([
-                'status' => true,
-                'message' => 'Recurso excluído com sucesso!'
+                'success' => true,
+                'message' => 'Recurso excluído com sucesso!',
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => false,
-                'message' => 'Erro ao excluir o recurso: ' . $e->getMessage()
+                'success' => false,
+                'message' => 'Erro ao excluir recurso: ' . $e->getMessage(),
             ]);
         }
     }
@@ -156,19 +193,22 @@ class ResourceController extends Controller
         }
     }
 
-    public function show()
+    public function myResources()
     {
-        $resources = Resource::all();
-        $resourcesWithOwnerName = $resources->map(function ($resource) {
-            $owner = User::where('id', $resource->owner_id)->first();
-            $resource->owner_name = $owner ? $owner->name : null;
-            return $resource;
-        });
+        try {
+            $userId = Auth::id(); 
+            $recursos = Resource::where('owner_id', $userId)->get();
 
-        return response()->json([
-            'message' => 'Lista de recursos',
-            'data' => $resources
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $recursos
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar os recursos: ' . $e->getMessage()
+            ]);
+        }
     }
 
     public function search($id)

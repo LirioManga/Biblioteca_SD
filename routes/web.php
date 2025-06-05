@@ -65,8 +65,10 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/student/requisicoes/feitas-por-mim', [ReservationController::class, 'viewMyRequests']);
     Route::post('/student/requisicoes/para-meus-recursos', [ReservationController::class, 'viewRequestsToMyResources']);
     Route::post('/student/recurso/registar', [ResourceController::class, 'store']);
-    Route::get('/student/recurso/visualizar', [ResourceController::class, 'show']);
-    Route::post('/student/recurso/actualizar', [ResourceController::class, 'update']);
+    Route::get('/student/recurso/visualizar', [ResourceController::class, 'myResources']);
+    Route::get('/student/recursos/listar', [ResourceController::class, 'myResources']);
+    Route::post('/student/recurso/actualizar/{id}', [ResourceController::class, 'update']);
+    Route::get('/student/recurso/editar/{id}', [ResourceController::class, 'edit']);
     Route::delete('/student/recurso/excluir/{id}', [ResourceController::class, 'destroy']);
     Route::get('/student/recurso/buscar/{id}', [ResourceController::class, 'search']);
     Route::get('/student/recurso/baixar/{id}', [ResourceController::class, 'download']);

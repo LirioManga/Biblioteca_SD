@@ -5,6 +5,7 @@
 
     <div class="bg-white p-6 rounded-lg shadow-md">
         <form id="form-adicionar-recurso" class="space-y-6">
+        <input type="hidden" id="resource_id" name="resource_id" value="">
             <!-- Título -->
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Título do Recurso*</label>
@@ -47,7 +48,7 @@
 
             <!-- Disponibilidade -->
             <div class="flex items-center">
-                <input type="checkbox" id="available" name="available" checked
+                <input type="checkbox" id="available" name="available" value="1" checked
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                 <label for="available" class="ml-2 block text-sm text-gray-700">Disponível para empréstimo</label>
             </div>
