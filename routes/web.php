@@ -70,7 +70,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/student/recurso/actualizar/{id}', [ResourceController::class, 'update']);
     Route::get('/student/recurso/editar/{id}', [ResourceController::class, 'edit']);
     Route::delete('/student/recurso/excluir/{id}', [ResourceController::class, 'destroy']);
-    Route::get('/student/recurso/buscar/{id}', [ResourceController::class, 'search']);
+    Route::get('/student/recurso/buscar', [ResourceController::class, 'search']);
     Route::get('/student/recurso/baixar/{id}', [ResourceController::class, 'download']);
 });
 

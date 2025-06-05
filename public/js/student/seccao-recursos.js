@@ -79,38 +79,7 @@ async function carregarMeusRecursos() {
         }
 
         const recursos = result.data;
-        const tbody = document.querySelector('#tabela-meus-recursos tbody');
-        tbody.innerHTML = '';
-
-        if (recursos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Nenhum recurso encontrado.</td></tr>`;
-            return;
-        }
-
-        recursos.forEach(recurso => {
-            const linha = document.createElement('tr');
-            linha.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${recurso.title}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatarTipo(recurso.type)}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${recurso.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                        ${recurso.available ? 'Disponível' : 'Indisponível'}
-                    </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatarData(recurso.created_at)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2 flex justify-center">
-                    <button onclick="editarRecurso(${recurso.id});" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                        Editar
-                    </button>
-                    <button onclick="excluirRecurso(${recurso.id});" class="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                        Excluir
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(linha);
-        });
+        renderizarRecursos(recursos);
 
     } catch (error) {
         console.error('Erro ao carregar recursos:', error);
@@ -209,6 +178,75 @@ async function editarRecurso(id) {
 }
 
 
+document.getElementById('pesquisa-recursos').addEventListener('input', function(e) {
+    // Se o campo estiver vazio, carrega todos os recursos
+    if (e.target.value.trim() === '') {
+        carregarMeusRecursos();
+    }
+});
+
+function renderizarRecursos(recursos) {
+    const tbody = document.querySelector('#tabela-meus-recursos tbody');
+    tbody.innerHTML = '';
+
+    if (recursos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Nenhum recurso encontrado.</td></tr>`;
+        return;
+    }
+
+    recursos.forEach(recurso => {
+        const linha = document.createElement('tr');
+        linha.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">${recurso.title}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatarTipo(recurso.type)}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${recurso.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                    ${recurso.available ? 'Disponível' : 'Indisponível'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatarData(recurso.created_at)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2 flex justify-center">
+                <button onclick="editarRecurso(${recurso.id});" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                    Editar
+                </button>
+                <button onclick="excluirRecurso(${recurso.id});" class="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                    Excluir
+                </button>
+            </td>
+        `;
+        tbody.appendChild(linha);
+    });
+}
+
+
+// Função de pesquisa
+async function pesquisarRecursos() {
+    const termo = document.getElementById('pesquisa-recursos').value.trim();
+    
+    try {
+        // Se o termo estiver vazio, carrega todos os recursos
+        if (!termo) {
+            carregarMeusRecursos();
+            return;
+        }
+        
+        const response = await fetch(`/student/recurso/buscar?q=${encodeURIComponent(termo)}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+            alert('Erro ao buscar recursos: ' + result.message);
+            return;
+        }
+        
+        renderizarRecursos(result.data);
+        
+    } catch (error) {
+        console.error('Erro ao pesquisar recursos:', error);
+        alert('Erro inesperado ao pesquisar recursos.');
+    }
+}
 
 function cancelarAdicionarRecurso() {
     document.getElementById("adicionar-recurso").classList.add("hidden");

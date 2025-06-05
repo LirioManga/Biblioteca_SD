@@ -210,20 +210,30 @@ class ResourceController extends Controller
             ]);
         }
     }
-
-    public function search($id)
+    public function search(Request $request)
     {
         try {
-            $resource = Resource::findOrFail($id);
-
+            $searchTerm = $request->input('q');
+            $userId = auth()->id();
+    
+            $query = Resource::where('owner_id', $userId)
+                        ->orderBy('created_at', 'desc');
+    
+            if ($searchTerm) {
+                $query->where('title', 'LIKE', "%$searchTerm%")
+                      ->orWhere('description', 'LIKE', "%$searchTerm%");
+            }
+    
             return response()->json([
-                'message' => 'Recurso encontrado',
-                'data' => $resource
+                'success' => true,
+                'data' => $query->get()
             ]);
+    
         } catch (Exception $e) {
             return response()->json([
-                'error' => 'Recurso não encontrado'
-            ]);
+                'success' => false,
+                'message' => 'Erro ao buscar recursos: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
