@@ -84,14 +84,14 @@ class ResourceController extends Controller
     {
         try {
             $resource = Resource::findOrFail($resourceId);
-            
+
             if (Auth::id() !== $resource->owner_id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Você não tem permissão para atualizar este recurso.'
                 ], 403);
             }
-    
+
             $request->validate([
                 'title' => 'sometimes|required|string|max:255',
                 'description' => 'sometimes|required|string',
@@ -100,33 +100,33 @@ class ResourceController extends Controller
                 'image' => 'sometimes|image',
                 'available' => 'sometimes|boolean',
             ]);
-    
+
             $data = $request->only(['title', 'description', 'type', 'available']);
-    
+
             if ($request->hasFile('file_path')) {
                 // Remove o arquivo antigo se existir
                 if ($resource->file_path && Storage::disk('public')->exists($resource->file_path)) {
                     Storage::disk('public')->delete($resource->file_path);
                 }
-                
+
                 $file = $request->file('file_path');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $data['file_path'] = $file->storeAs('recursos/arquivos', $fileName, 'public');
             }
-    
+
             if ($request->hasFile('image')) {
                 // Remove a imagem antiga se existir
                 if ($resource->image_path && Storage::disk('public')->exists($resource->image_path)) {
                     Storage::disk('public')->delete($resource->image_path);
                 }
-                
+
                 $image = $request->file('image');
                 $imageName = time() . '_img_' . $image->getClientOriginalName();
                 $data['image_path'] = $image->storeAs('recursos/imagens', $imageName, 'public');
             }
-    
+
             $resource->update($data);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Recurso atualizado com sucesso!',
@@ -144,7 +144,7 @@ class ResourceController extends Controller
     {
         try {
             $recurso = Resource::findOrFail($id);
-            
+
             // Verifica se o usuário é o dono do recurso
             if ($recurso->owner_id !== auth()->id()) {
                 return response()->json([
@@ -152,15 +152,15 @@ class ResourceController extends Controller
                     'message' => 'Você não tem permissão para excluir este recurso.',
                 ], 403);
             }
-    
+
             // Remove os arquivos associados
             Storage::disk('public')->delete($recurso->file_path);
             if ($recurso->image_path) {
                 Storage::disk('public')->delete($recurso->image_path);
             }
-    
+
             $recurso->delete();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Recurso excluído com sucesso!',
@@ -196,7 +196,7 @@ class ResourceController extends Controller
     public function myResources()
     {
         try {
-            $userId = Auth::id(); 
+            $userId = Auth::id();
             $recursos = Resource::where('owner_id', $userId)->get();
 
             return response()->json([
@@ -215,20 +215,19 @@ class ResourceController extends Controller
         try {
             $searchTerm = $request->input('q');
             $userId = auth()->id();
-    
+
             $query = Resource::where('owner_id', $userId)
-                        ->orderBy('created_at', 'desc');
-    
+                ->orderBy('created_at', 'desc');
+
             if ($searchTerm) {
                 $query->where('title', 'LIKE', "%$searchTerm%")
-                      ->orWhere('description', 'LIKE', "%$searchTerm%");
+                    ->orWhere('description', 'LIKE', "%$searchTerm%");
             }
-    
+
             return response()->json([
                 'success' => true,
                 'data' => $query->get()
             ]);
-    
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -237,11 +236,33 @@ class ResourceController extends Controller
         }
     }
 
+    public function listAllResources()
+    {
+        try {
+            $userId = Auth::id();
+
+        $recursos = Resource::with(['owner', 'reservations'])
+            ->where('owner_id', '!=', $userId)
+            ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $recursos,
+               
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar os recursos: ' . $e->getMessage()
+            ]);
+        }
+    }
+
     public function openResource($id)
     {
         try {
             $recurso = Resource::findOrFail($id);
-            
+
             // Verifica se o usuário tem permissão para acessar o recurso
             if (!$recurso->available && $recurso->owner_id !== auth()->id()) {
                 return response()->json([
@@ -249,7 +270,7 @@ class ResourceController extends Controller
                     'message' => 'Você não tem permissão para acessar este recurso.',
                 ], 403);
             }
-            
+
             // Verifica se o arquivo existe
             $filePath = storage_path('app/public/' . $recurso->file_path);
             if (!file_exists($filePath)) {
@@ -258,7 +279,7 @@ class ResourceController extends Controller
                     'message' => 'O arquivo do recurso não foi encontrado.',
                 ], 404);
             }
-            
+
             // Log::info('Acessando recurso: ' . $recurso->file_path);
             // Log::info('Titulo do recurso: ' . $recurso->title);
             // Retorna os dados do recurso e a URL para o PDF
@@ -268,7 +289,6 @@ class ResourceController extends Controller
                 'title' => $recurso->title,
                 'pdf_url' => asset('storage/' . $recurso->file_path),
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

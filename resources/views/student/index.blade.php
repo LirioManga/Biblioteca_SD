@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biblioteca | Estudante</title>
+  <title>Biblioteca - Estudante</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -40,7 +40,7 @@
         <li>
           <a href="/student/recursos" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
             <i class="fas fa-columns text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
-            <span class="flex-1 ms-3 whitespace-nowrap">Recursos</span>
+            <span class="flex-1 ms-3 whitespace-nowrap">Recursos/Requisições</span>
           </a>
         </li>
 
@@ -190,7 +190,7 @@
 
     <section id="recursos" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
       <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-gray-800">Recursos</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Recursos/Requisições</h1>
 
         <!-- Campo de pesquisa alinhado à direita -->
         <div class="flex items-center">
@@ -208,47 +208,20 @@
 
       <div class="border-solid border border-[#ddd] rounded-md p-4 bg-white">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
+          <table id="tabela-recursos-requisicoes" class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estudante</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titulo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Disponibilidade</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publicado Por</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requisição</th>
                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acções</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
-                      <span class="text-blue-600 font-medium">LM</span>
-                    </div>
-                    <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900">Lirio Manga</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">liriomanga@gmail.com</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">847777777</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                    Bloqueado
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2  flex justify-center">
-                  <button onclick="aprovarNovoEstudante();" class="text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                    Aprovar
-                  </button>
-                  <button onclick="bloquearEstudante();" class="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                    Bloquear
-                  </button>
-                  <button onclick="editarDadosEstudante();" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                    Editar
-                  </button>
-                </td>
-              </tr>
+            <tbody  class="bg-white divide-y divide-gray-200">
+             
             </tbody>
           </table>
         </div>

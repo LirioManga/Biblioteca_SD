@@ -1,7 +1,8 @@
 
 addEventListener('DOMContentLoaded', function () {
     carregarMeusRecursos();
- 
+    carregarRecursosDisponiveis();
+
     const pdfViewer = document.getElementById('pdf-viewer');
     const currentPageEl = document.getElementById('current-page');
     const totalPagesEl = document.getElementById('total-pages');
@@ -13,102 +14,102 @@ addEventListener('DOMContentLoaded', function () {
     const closeReaderBtn = document.getElementById('close-reader');
     const pdfContainer = document.getElementById('pdf-container');
     const readerSection = document.getElementById('abrir-recurso');
-    
+
     let currentPage = 1;
     let totalPages = 0;
     let zoomLevel = 1.0;
     let pdfDoc = null;
-    
+
     // Função para carregar o PDF
     async function loadPdf(pdfUrl, title) {
         try {
             // Mostrar a seção do leitor e esconder a lista
             document.getElementById("meus-recursos-principal").classList.add("hidden");
             readerSection.classList.remove("hidden");
-            
+
             document.getElementById('resource-title').textContent = title;
-            
+
             // Usando PDF.js para renderização mais avançada
             const loadingTask = pdfjsLib.getDocument(pdfUrl);
             pdfDoc = await loadingTask.promise;
-            
+
             totalPages = pdfDoc.numPages;
             totalPagesEl.textContent = totalPages;
             currentPage = 1;
             updatePagination();
-            
+
             // Renderizar a primeira página
             await renderPage(currentPage);
-            
+
         } catch (error) {
             console.error('Erro ao carregar PDF:', error);
             alert('Erro ao carregar o PDF. Por favor, tente novamente.');
         }
     }
-    
+
     // Função para renderizar uma página específica
     async function renderPage(pageNum) {
         try {
             const page = await pdfDoc.getPage(pageNum);
             const viewport = page.getViewport({ scale: zoomLevel });
-            
+
             // Preparar o canvas
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             canvas.height = viewport.height;
             canvas.width = viewport.width;
-            
+
             // Limpar o container e adicionar o canvas
             pdfContainer.innerHTML = '';
             pdfContainer.appendChild(canvas);
-            
+
             // Renderizar a página no canvas
             await page.render({
                 canvasContext: context,
                 viewport: viewport
             }).promise;
-            
+
             currentPage = pageNum;
             updatePagination();
-            
+
         } catch (error) {
             console.error('Erro ao renderizar página:', error);
         }
     }
-    
+
     // Funções de controle
     function updatePagination() {
         currentPageEl.textContent = currentPage;
         prevPageBtn.disabled = currentPage <= 1;
         nextPageBtn.disabled = currentPage >= totalPages;
     }
-    
+
     prevPageBtn.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
             renderPage(currentPage);
         }
     });
-    
+
     nextPageBtn.addEventListener('click', () => {
         if (currentPage < totalPages) {
             currentPage++;
             renderPage(currentPage);
         }
     });
-    
+
     zoomInBtn.addEventListener('click', () => {
         zoomLevel += 0.25;
         renderPage(currentPage);
     });
-    
+
     zoomOutBtn.addEventListener('click', () => {
         if (zoomLevel > 0.5) {
             zoomLevel -= 0.25;
             renderPage(currentPage);
         }
     });
-    
+
     fullscreenBtn.addEventListener('click', () => {
         if (!document.fullscreenElement) {
             pdfContainer.requestFullscreen().catch(err => {
@@ -118,40 +119,40 @@ addEventListener('DOMContentLoaded', function () {
             document.exitFullscreen();
         }
     });
-    
+
     closeReaderBtn.addEventListener('click', () => {
         readerSection.classList.add("hidden");
         document.getElementById("meus-recursos-principal").classList.remove("hidden");
     });
-    
+
     // Função para abrir um recurso
-    window.abrirRecurso = async function(id) {
-     
+    window.abrirRecurso = async function (id) {
+
         document.getElementById("meus-recursos-principal").classList.add("hidden");
         document.getElementById("abrir-recurso").classList.remove("hidden");
         try {
             const response = await fetch(`/student/recurso/abrir/${id}`);
             const result = await response.json();
-            
+
             if (!result.success) {
                 alert('Erro ao abrir recurso: ' + result.message);
                 return;
             }
-            
+
             const recurso = result.data;
             const pdfUrl = result.pdf_url; // Usando a URL retornada pelo servidor
-            
+
             console.log('Recurso:', result.title);
             console.log('PDF URL:', pdfUrl);
-            
+
             await loadPdf(pdfUrl, result.title);
-            
+
         } catch (error) {
             console.error('Erro ao abrir recurso:', error);
             alert('Erro ao abrir o recurso. Por favor, tente novamente.');
         }
     };
-    
+
 });
 let formMode = 'add';
 
@@ -160,7 +161,7 @@ async function adicionarRecurso() {
     document.getElementById("meus-recursos-principal").classList.add("hidden");
     document.getElementById("adicionar-recurso").classList.remove("hidden");
     document.getElementById("form-adicionar-recurso").reset();
-} 
+}
 
 document.getElementById('form-adicionar-recurso').addEventListener('submit', async function (e) {
     e.preventDefault(); // Impede envio tradicional
@@ -171,9 +172,9 @@ document.getElementById('form-adicionar-recurso').addEventListener('submit', asy
     const title = formData.get('title');
     const description = formData.get('description');
     const type = formData.get('type');
-    const file = formData.get('file_path'); 
+    const file = formData.get('file_path');
     const availableChecked = form.querySelector('#available').checked;
-    formData.set('available', availableChecked ? '1' : '0'); 
+    formData.set('available', availableChecked ? '1' : '0');
 
     // Validação
     if (!title || !description || !type || !file) {
@@ -184,17 +185,17 @@ document.getElementById('form-adicionar-recurso').addEventListener('submit', asy
         alert('Por favor, selecione um arquivo para upload.');
         return;
     }
-    
-   
+
+
     try {
         let url;
-        
+
         if (formMode === 'edit') {
             url = `/student/recurso/actualizar/${resourceId}`;
-           
+
         } else {
             url = `/student/recurso/registar`;
-          
+
         }
 
         const response = await fetch(url, {
@@ -219,7 +220,7 @@ document.getElementById('form-adicionar-recurso').addEventListener('submit', asy
 
 async function carregarMeusRecursos() {
     try {
-        const response = await fetch('/student/recursos/listar'); 
+        const response = await fetch('/student/recursos/listar');
         const result = await response.json();
         console.log(result);
 
@@ -258,7 +259,7 @@ async function excluirRecurso(id) {
         if (!confirm('Tem certeza que deseja excluir este recurso? Esta ação não pode ser desfeita.')) {
             return;
         }
-        
+
         const response = await fetch(`/student/recurso/excluir/${id}`, {
             method: 'DELETE',
             headers: {
@@ -266,19 +267,19 @@ async function excluirRecurso(id) {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             }
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             alert('Recurso excluído com sucesso!');
-            carregarMeusRecursos(); 
-        }else{
+            carregarMeusRecursos();
+        } else {
             alert('Erro ao excluir recurso: ' + result.message);
             carregarMeusRecursos();
         }
-        
-      
-        
+
+
+
     } catch (error) {
         console.error('Erro ao excluir recurso:', error);
         alert('Erro inesperado ao excluir recurso.');
@@ -287,40 +288,40 @@ async function excluirRecurso(id) {
 
 async function editarRecurso(id) {
     document.getElementById("meus-recursos-principal").classList.add("hidden");
-   
+
     formMode = 'edit';
     try {
         // Buscar os dados do recurso
         const response = await fetch(`/student/recurso/editar/${id}`);
         const result = await response.json();
-        
+
         if (!result.success) {
             alert('Erro ao carregar recurso: ' + result.message);
             return;
         }
-        
+
         const recurso = result.data;
-        
+
         // Configurar o formulário existente para edição
         const formSection = document.getElementById('adicionar-recurso');
         formSection.classList.remove('hidden');
-        
+
         // Atualizar o título do formulário
         const tituloForm = formSection.querySelector('h1');
         tituloForm.textContent = 'Editar Recurso';
-        
+
         // Preencher os campos do formulário
         document.getElementById('title').value = recurso.title;
         document.getElementById('description').value = recurso.description;
         document.getElementById('type').value = recurso.type;
         document.getElementById('available').checked = recurso.available;
         document.getElementById('resource_id').value = recurso.id;
-        
+
         // Mudar o texto do botão de submit
         const submitBtn = formSection.querySelector('button[type="submit"]');
         submitBtn.textContent = 'Actualizar Recurso';
-        
-                      
+
+
     } catch (error) {
         console.error('Erro ao abrir edição:', error);
         alert('Erro ao carregar recurso para edição');
@@ -328,7 +329,7 @@ async function editarRecurso(id) {
 }
 
 
-document.getElementById('pesquisa-recursos').addEventListener('input', function(e) {
+document.getElementById('pesquisa-recursos').addEventListener('input', function (e) {
     // Se o campo estiver vazio, carrega todos os recursos
     if (e.target.value.trim() === '') {
         carregarMeusRecursos();
@@ -377,28 +378,178 @@ function renderizarRecursos(recursos) {
 
 async function pesquisarRecursos() {
     const termo = document.getElementById('pesquisa-recursos').value.trim();
-    
+
     try {
         if (!termo) {
             carregarMeusRecursos();
             return;
         }
-        
+
         const response = await fetch(`/student/recurso/buscar?q=${encodeURIComponent(termo)}`);
         const result = await response.json();
-        
+
         if (!result.success) {
             alert('Erro ao buscar recursos: ' + result.message);
             return;
         }
-        
+
         renderizarRecursos(result.data);
-        
+
     } catch (error) {
         console.error('Erro ao pesquisar recursos:', error);
         alert('Erro inesperado ao pesquisar recursos.');
     }
 }
+
+async function carregarRecursosDisponiveis() {
+    try {
+        const response = await fetch('/student/recursos/listar-todos');
+        const result = await response.json();
+        console.log(result);
+
+        if (!result.success) {
+            alert('Erro ao buscar recursos: ' + (result.message || 'Erro desconhecido'));
+            return;
+        }
+
+        const recursos = result.data;
+        const tbody = document.querySelector('#tabela-recursos-requisicoes tbody');
+        tbody.innerHTML = '';
+
+        if (recursos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Nenhum recurso encontrado.</td></tr>`;
+            return;
+        }
+
+        recursos.forEach(recurso => {
+            const disponibilidade = recurso.available
+                ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Disponível</span>'
+                : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Bloqueado</span>';
+
+            const publicador = recurso.owner
+                ? `
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-blue-600 font-medium">${getIniciais(recurso.owner.name)}</span>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">${recurso.owner.name}</div>
+                  </div>
+                </div>`
+                : '--';
+
+            const linha = document.createElement('tr');
+            linha.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${recurso.title}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatarTipo(recurso.type)}</td>
+                <td class="px-6 py-4 whitespace-nowrap">${disponibilidade}</td>
+                <td class="px-6 py-4 whitespace-nowrap">${publicador}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatarData(recurso.created_at)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    ${recurso.reservations?.length
+                    ? formatarStatus(recurso.reservations[0].status)
+                    : '--'}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2 flex justify-center">
+                  <button onclick="verRecurso(${recurso.id});" class="text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md text-xs font-medium">Ver</button>
+                  <button onclick="cancelarRequisicao(${recurso.id});" class="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md text-xs font-medium">Cancelar</button>
+                  <button onclick="requisitarRecurso(${recurso.id});" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-xs font-medium">Requisitar</button>
+                </td>
+            `;
+            tbody.appendChild(linha);
+        });
+
+    } catch (error) {
+        console.error('Erro ao carregar recursos:', error);
+        alert('Erro inesperado ao carregar recursos.');
+    }
+}
+
+function formatarTipo(tipo) {
+    switch (tipo) {
+        case 'book': return 'Livro';
+        case 'video': return 'Vídeo';
+        case 'article': return 'Artigo';
+        default: return tipo;
+    }
+}
+
+function formatarStatus(status) {
+    const cores = {
+        pending: 'bg-yellow-100 text-yellow-800',
+        approved: 'bg-green-100 text-green-800',
+        rejected: 'bg-red-100 text-red-800',
+        cancelled: 'bg-gray-100 text-gray-800',
+        returned: 'bg-blue-100 text-blue-800'
+    };
+
+    return `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${cores[status] || 'bg-gray-100 text-gray-800'}">
+        ${status.charAt(0).toUpperCase() + status.slice(1)}
+    </span>`;
+}
+
+
+async function requisitarRecurso(resourceId) {
+    try {
+        const response = await fetch('/student/recurso/requisitar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ id: resourceId })
+        });
+
+        const result = await response.json();
+        console.log(result);
+
+        if (!result.success) {
+            alert('Erro ao requisitar recurso: ' + (result.message || 'Erro desconhecido'));
+            return;
+        }
+
+        alert('Recurso requisitado com sucesso!');
+        carregarRecursosDisponiveis(); // Recarrega a tabela para atualizar status
+    } catch (error) {
+        console.error('Erro ao requisitar recurso:', error);
+        alert('Erro inesperado ao requisitar recurso.');
+    }
+}
+
+async function cancelarRequisicao(resourceId) {
+    if (!confirm("Tens certeza que queres cancelar esta requisição?" + resourceId)) return;
+
+    try {
+        const response = await fetch('/student/requisicao/cancelar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ id: resourceId })
+        });
+
+        const result = await response.json();
+        console.log(result);
+
+        if (!result.success) {
+            alert('Erro ao cancelar requisição: ' + (result.message || 'Erro desconhecido'));
+            return;
+        }
+
+        alert('Requisição cancelada com sucesso!');
+        carregarRecursosDisponiveis(); 
+    } catch (error) {
+        console.error('Erro ao cancelar requisição:', error);
+        alert('Erro inesperado ao cancelar requisição.');
+    }
+}
+
+
+function getIniciais(nome) {
+    return nome.split(' ').map(n => n[0]).join('').toUpperCase();
+}
+
 
 function cancelarAdicionarRecurso() {
     document.getElementById("adicionar-recurso").classList.add("hidden");

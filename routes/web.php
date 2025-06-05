@@ -58,13 +58,15 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     /* -------------------------------------- Requisitar Recurso------------------------------- */
     Route::post('/student/recurso/devolver', [ReservationController::class, 'returnResource']);
-    Route::post('/student/recurso/cancelar', [ReservationController::class, 'cancelReservation']);
+    Route::post('/student/requisicao/cancelar', [ReservationController::class, 'cancelReservation']);
     Route::post('/student/recurso/requisitar', [ReservationController::class, 'requestResource']);
     Route::post('/student/requisicoes/feitas-por-mim', [ReservationController::class, 'viewMyRequests']);
     Route::post('/student/requisicoes/para-meus-recursos', [ReservationController::class, 'viewRequestsToMyResources']);
     Route::post('/student/recurso/registar', [ResourceController::class, 'store']);
     Route::get('/student/recurso/abrir/{id}', [ResourceController::class, 'openResource']);
     Route::get('/student/recursos/listar', [ResourceController::class, 'myResources']);
+    Route::get('/student/recursos/listar-todos', [ResourceController::class, 'listAllResources']);
+
     Route::post('/student/recurso/actualizar/{id}', [ResourceController::class, 'update']);
     Route::get('/student/recurso/editar/{id}', [ResourceController::class, 'edit']);
     Route::delete('/student/recurso/excluir/{id}', [ResourceController::class, 'destroy']);

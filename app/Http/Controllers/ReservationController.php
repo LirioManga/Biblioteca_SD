@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use App\Models\Resource;
 use Exception;
+use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
@@ -12,12 +13,7 @@ class ReservationController extends Controller
     public function requestResource(Request $request)
     {
         try {
-            $request->validate([
-                'user_id' => 'required|exists:users,id',
-                'resource_id' => 'required|exists:resources,id',
-            ]);
-
-            $resource = Resource::findOrFail($request->resource_id);
+            $resource = Resource::findOrFail($request->id);
 
             if (!$resource->available) {
                 return response()->json([
@@ -28,22 +24,23 @@ class ReservationController extends Controller
 
             $reservation = Reservation::create([
                 'user_id' => $request->user_id,
-                'resource_id' => $request->resource_id,
+                'resource_id' => $request->id,
                 'requested_at' => now(),
-                'status' => 'requested',
+                'user_id' => auth()->id(),
+                'status' => 'pending',
             ]);
 
             $resource->available = 0;
             $resource->save();
 
             return response()->json([
-                'status' => true,
+                'success' => true,
                 'message' => 'Recurso requisitado com sucesso!',
                 'data' => $reservation
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => 'Erro ao requisitar o recurso: ' . $e->getMessage()
             ]);
         }
@@ -51,33 +48,33 @@ class ReservationController extends Controller
 
     public function cancelReservation(Request $request)
     {
-        $request->validate([
-            'reservation_id' => 'required|exists:reservations,id',
-        ]);
+        try {
+            $reservation = Reservation::where('resource_id', $request->id)
+                ->where('user_id', auth()->id())
+                ->whereIn('status', ['approved', 'pending'])
+                ->latest()
+                ->firstOrFail();
 
-        $reservation = Reservation::findOrFail($request->reservation_id);
+            $reservation->status = 'cancelled';
+            $reservation->returned_at = now();
+            $reservation->save();
 
-        if ($reservation->status !== 'requested') {
+            // Libera o recurso
+            $reservation->resource->update(['available' => 1]);
+
             return response()->json([
-                'status' => false,
-                'message' => 'Só é possível cancelar uma requisição que ainda não foi devolvida.'
+                'success' => true,
+                'message' => 'Requisição cancelada com sucesso!',
+                'data' => $reservation
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao cancelar a requisição: ' . $e->getMessage()
             ]);
         }
-
-        $reservation->status = 'cancelled';
-        $reservation->returned_at = now();
-        $reservation->save();
-
-        $resource = $reservation->resource;
-        $resource->available = 1;
-        $resource->save();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Requisição cancelada com sucesso!',
-            'data' => $reservation
-        ]);
     }
+
 
     public function returnResource(Request $request)
     {
@@ -109,8 +106,9 @@ class ReservationController extends Controller
                 'data' => $reservation
             ]);
         } catch (Exception $e) {
+
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => 'Erro ao devolver o recurso: ' . $e->getMessage()
             ]);
         }
