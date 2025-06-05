@@ -11,13 +11,16 @@ class Resource extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'title',
         'description',
         'type',
         'owner_id',
         'file_path',
-        'image_path',
-        'available',
+       
+    ];
+    protected $casts = [
+        'available' => 'boolean',
     ];
 
     public function owner()

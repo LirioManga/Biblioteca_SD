@@ -16,7 +16,9 @@ document.getElementById('form-adicionar-recurso').addEventListener('submit', asy
     const title = formData.get('title');
     const description = formData.get('description');
     const type = formData.get('type');
-    const file = formData.get('file_path'); // Agora corresponde ao nome no formulário
+    const file = formData.get('file_path'); 
+    const availableChecked = form.querySelector('#available').checked;
+    formData.set('available', availableChecked ? '1' : '0'); 
 
     // Validação
     if (!title || !description || !type || !file) {
@@ -24,17 +26,9 @@ document.getElementById('form-adicionar-recurso').addEventListener('submit', asy
         return;
     }
 
-    const id = document.getElementById('resource-id')?.value;
-    if (id) {
-        formData.append('id', id);
-    }
-
-    const url = id 
-        ? `/student/recurso/actualizar`
-        : `/student/recurso/registar`;
-
+   
     try {
-        const response = await fetch(url, {
+        const response = await fetch(`/student/recurso/registar`, {
             method: 'POST',
             body: formData,
             headers: {

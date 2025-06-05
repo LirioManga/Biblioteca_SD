@@ -1,4 +1,4 @@
-<section id="adicionar-recurso" class="p-4 border-2 border-gray-200 border-dashed rounded-lg hidden">
+<section id="adicionar-recurso" class="p-2 hidden">
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-2xl font-bold text-gray-800">Adicionar Novo Recurso</h1>
     </div>

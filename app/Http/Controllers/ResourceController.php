@@ -13,84 +13,44 @@ use Illuminate\Support\Facades\Storage;
 
 class ResourceController extends Controller
 {
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'title' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //         'type' => 'required|string',
-    //         'file' => 'nullable|file|mimes:pdf,doc,docx',
-    //         'image' => 'nullable|image|max:2048',
-    //     ]);
-
-    //     $resource = new Resource($validated);
-    //     if (Auth::check()) {
-    //         $resource->owner_id = Auth::user()->id;
-    //     } else {
-    //         $resource->owner_id = $request->input('owner_id');
-    //         // $resource->owner_id = '1b341d40-1c04-40cc-8aae-29d3dc7dadf0';
-    //     }
-
-    //     if ($request->hasFile('file_path')) {
-    //         $resource->file_path = $request->file('file_path')->store('resources/files');
-    //     }
-
-    //     if ($request->hasFile('image_path')) {
-    //         $resource->image_path = $request->file('image_path')->store('resources/images');
-    //     }
-
-    //     $resource->save();
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Recurso registado com sucesso!',
-    //         'data' => $resource
-    //     ]);
-    // }
 
     public function store(Request $request)
-    { 
+    {
+        try {
+           
+            $file = $request->file('file_path');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $filePath = $file->storeAs('recursos/arquivos', $fileName, 'public');
 
-        try{
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'type' => 'required|string',
-                'file_path' => 'required|file|mimes:pdf,doc,docx,ppt,pptx',
-                'image_path' => 'nullable|image|max:2048',
-            ]);
-    
-            $resource = new Resource();
-            $resource->title = $validated['title'];
-            $resource->description = $validated['description'] ?? null;
-            $resource->type = $validated['type'];
-    
-            // Salvar arquivos
-            if ($request->hasFile('file_path')) {
-                $resource->file_path = $request->file('file_path')->store('resources/files', 'public');
-            }
-    
-            if ($request->hasFile('image_path')) {
-                $resource->image_path = $request->file('image_path')->store('resources/images', 'public');
-            }
-    
-            // Associar o recurso ao usuário autenticado
-            $resource->owner_id = Auth::user()->id;
-    
-            $resource->save();
-    
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_img_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('recursos/imagens', $imageName, 'public');
+        }
+
+        $recurso = Resource::create([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'type' => $request->input('type'),
+            'file_path' => $filePath,
+            'available' => $request->boolean('available'), 
+            'owner_id' => auth()->id(), 
+        ]);
+           
+            Log::info('Recurso adicionado: ' . json_encode($recurso));
+
             return response()->json([
                 'status' => true,
-                'message' => 'Recurso registado com sucesso!',
-                'data' => $resource
+                'message' => 'Recurso adicionado com sucesso!',
+                'recurso' => $recurso,
             ]);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Erro ao registar o recurso: ' . $e->getMessage()
+                'message' => 'Erro ao adicionar recurso: ' . $e->getMessage(),
             ]);
         }
-       
     }
 
     public function update(Request $request)
