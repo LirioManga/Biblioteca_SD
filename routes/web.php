@@ -55,8 +55,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/student/meus-recursos', [UserController::class, 'student'])->name('student');
     Route::get('/student/recursos', [UserController::class, 'student'])->name('student');
     Route::get('/student/perfil', [UserController::class, 'student'])->name('student');
-    /* -------------------------------------- Recursos --------------------------------------- */
-
 
     /* -------------------------------------- Requisitar Recurso------------------------------- */
     Route::post('/student/recurso/devolver', [ReservationController::class, 'returnResource']);
@@ -65,7 +63,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/student/requisicoes/feitas-por-mim', [ReservationController::class, 'viewMyRequests']);
     Route::post('/student/requisicoes/para-meus-recursos', [ReservationController::class, 'viewRequestsToMyResources']);
     Route::post('/student/recurso/registar', [ResourceController::class, 'store']);
-    Route::get('/student/recurso/visualizar', [ResourceController::class, 'myResources']);
+    Route::get('/student/recurso/abrir/{id}', [ResourceController::class, 'openResource']);
     Route::get('/student/recursos/listar', [ResourceController::class, 'myResources']);
     Route::post('/student/recurso/actualizar/{id}', [ResourceController::class, 'update']);
     Route::get('/student/recurso/editar/{id}', [ResourceController::class, 'edit']);

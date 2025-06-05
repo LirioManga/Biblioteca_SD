@@ -322,6 +322,7 @@
 
 
       @include('student.partials.addResource')
+      @include('student.partials.openResource')
     </section>
     <section id="perfil" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
       <div class="flex justify-between items-center mb-4">
@@ -332,9 +333,14 @@
   </main>
 
   <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+
+  <!-- Worker do PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js"></script>
   <script src="{{ asset('js/student/student.js') }}"></script>
   <script src="{{ asset('js/student/seccao-requisicoes.js') }}"></script>
   <script src="{{ asset('js/student/seccao-recursos.js') }}"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const profileButton = document.getElementById('profileDropdownButton');
@@ -356,8 +362,6 @@
         e.stopPropagation();
       });
     });
-
- 
   </script>
 </body>
 

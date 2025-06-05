@@ -236,4 +236,44 @@ class ResourceController extends Controller
             ], 500);
         }
     }
+
+    public function openResource($id)
+    {
+        try {
+            $recurso = Resource::findOrFail($id);
+            
+            // Verifica se o usuário tem permissão para acessar o recurso
+            if (!$recurso->available && $recurso->owner_id !== auth()->id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você não tem permissão para acessar este recurso.',
+                ], 403);
+            }
+            
+            // Verifica se o arquivo existe
+            $filePath = storage_path('app/public/' . $recurso->file_path);
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'O arquivo do recurso não foi encontrado.',
+                ], 404);
+            }
+            
+            // Log::info('Acessando recurso: ' . $recurso->file_path);
+            // Log::info('Titulo do recurso: ' . $recurso->title);
+            // Retorna os dados do recurso e a URL para o PDF
+            return response()->json([
+                'success' => true,
+                'recurso' => $recurso,
+                'title' => $recurso->title,
+                'pdf_url' => asset('storage/' . $recurso->file_path),
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar recurso: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

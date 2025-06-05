@@ -1,7 +1,157 @@
+
 addEventListener('DOMContentLoaded', function () {
     carregarMeusRecursos();
  
-
+    const pdfViewer = document.getElementById('pdf-viewer');
+    const currentPageEl = document.getElementById('current-page');
+    const totalPagesEl = document.getElementById('total-pages');
+    const prevPageBtn = document.getElementById('prev-page');
+    const nextPageBtn = document.getElementById('next-page');
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const fullscreenBtn = document.getElementById('fullscreen');
+    const closeReaderBtn = document.getElementById('close-reader');
+    const pdfContainer = document.getElementById('pdf-container');
+    const readerSection = document.getElementById('abrir-recurso');
+    
+    let currentPage = 1;
+    let totalPages = 0;
+    let zoomLevel = 1.0;
+    let pdfDoc = null;
+    
+    // Função para carregar o PDF
+    async function loadPdf(pdfUrl, title) {
+        try {
+            // Mostrar a seção do leitor e esconder a lista
+            document.getElementById("meus-recursos-principal").classList.add("hidden");
+            readerSection.classList.remove("hidden");
+            
+            document.getElementById('resource-title').textContent = title;
+            
+            // Usando PDF.js para renderização mais avançada
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            pdfDoc = await loadingTask.promise;
+            
+            totalPages = pdfDoc.numPages;
+            totalPagesEl.textContent = totalPages;
+            currentPage = 1;
+            updatePagination();
+            
+            // Renderizar a primeira página
+            await renderPage(currentPage);
+            
+        } catch (error) {
+            console.error('Erro ao carregar PDF:', error);
+            alert('Erro ao carregar o PDF. Por favor, tente novamente.');
+        }
+    }
+    
+    // Função para renderizar uma página específica
+    async function renderPage(pageNum) {
+        try {
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: zoomLevel });
+            
+            // Preparar o canvas
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            // Limpar o container e adicionar o canvas
+            pdfContainer.innerHTML = '';
+            pdfContainer.appendChild(canvas);
+            
+            // Renderizar a página no canvas
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+            
+            currentPage = pageNum;
+            updatePagination();
+            
+        } catch (error) {
+            console.error('Erro ao renderizar página:', error);
+        }
+    }
+    
+    // Funções de controle
+    function updatePagination() {
+        currentPageEl.textContent = currentPage;
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= totalPages;
+    }
+    
+    prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderPage(currentPage);
+        }
+    });
+    
+    nextPageBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderPage(currentPage);
+        }
+    });
+    
+    zoomInBtn.addEventListener('click', () => {
+        zoomLevel += 0.25;
+        renderPage(currentPage);
+    });
+    
+    zoomOutBtn.addEventListener('click', () => {
+        if (zoomLevel > 0.5) {
+            zoomLevel -= 0.25;
+            renderPage(currentPage);
+        }
+    });
+    
+    fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            pdfContainer.requestFullscreen().catch(err => {
+                alert(`Erro ao tentar entrar em tela cheia: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    });
+    
+    closeReaderBtn.addEventListener('click', () => {
+        readerSection.classList.add("hidden");
+        document.getElementById("meus-recursos-principal").classList.remove("hidden");
+    });
+    
+    // Função para abrir um recurso
+    window.abrirRecurso = async function(id) {
+     
+        document.getElementById("meus-recursos-principal").classList.add("hidden");
+        document.getElementById("abrir-recurso").classList.remove("hidden");
+        try {
+            const response = await fetch(`/student/recurso/abrir/${id}`);
+            const result = await response.json();
+            
+            if (!result.success) {
+                alert('Erro ao abrir recurso: ' + result.message);
+                return;
+            }
+            
+            const recurso = result.data;
+            const pdfUrl = result.pdf_url; // Usando a URL retornada pelo servidor
+            
+            console.log('Recurso:', result.title);
+            console.log('PDF URL:', pdfUrl);
+            
+            await loadPdf(pdfUrl, result.title);
+            
+        } catch (error) {
+            console.error('Erro ao abrir recurso:', error);
+            alert('Erro ao abrir o recurso. Por favor, tente novamente.');
+        }
+    };
+    
 });
 let formMode = 'add';
 
@@ -208,6 +358,10 @@ function renderizarRecursos(recursos) {
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatarData(recurso.created_at)}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2 flex justify-center">
+                <button onclick="abrirRecurso(${recurso.id});" class="text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                    Abrir
+                </button>
+
                 <button onclick="editarRecurso(${recurso.id});" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-xs font-medium transition-colors">
                     Editar
                 </button>
@@ -221,12 +375,10 @@ function renderizarRecursos(recursos) {
 }
 
 
-// Função de pesquisa
 async function pesquisarRecursos() {
     const termo = document.getElementById('pesquisa-recursos').value.trim();
     
     try {
-        // Se o termo estiver vazio, carrega todos os recursos
         if (!termo) {
             carregarMeusRecursos();
             return;
