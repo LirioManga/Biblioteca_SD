@@ -19,15 +19,15 @@
 
     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-sm border border-gray-200 rounded-lg p-8 shadow-sm">
-            <img class="mx-auto h-10 w-auto" src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
-            <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Acessar a minha conta</h2>
+            
+            <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Aceder a minha conta</h2>
 
             <div class="mt-10">
                 <form class="space-y-6" action="{{ route('login.post') }}" method="POST">
                     @csrf <!-- Add CSRF token -->
                     
                     <div>
-                        <label for="name" class="block text-sm/6 font-medium text-gray-900">Email ou Nome</label>
+                        <label for="name" class="block text-sm/6 font-medium text-gray-900">Email</label>
                         <div class="mt-2">
                             <input type="text" name="name" id="name" autocomplete="username" required 
                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">

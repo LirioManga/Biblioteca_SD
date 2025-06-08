@@ -3,6 +3,7 @@ const routes = {
     "/student/inicio": "inicio",
     "/student/meus-recursos": "meus-recursos",
     "/student/recursos": "recursos",
+    "/student/requisicoes": "requisicoes",
     "/student/perfil": "perfil",
   };
 

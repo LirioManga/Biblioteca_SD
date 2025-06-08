@@ -24,12 +24,7 @@
       </div>
       <ul class="space-y-2">
         <!-- Dashboard -->
-        <li>
-          <a href="/student/inicio" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
-            <i class="fas fa-tachometer-alt text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
-            <span class="ms-3">Inicio</span>
-          </a>
-        </li>
+        <!-- 
         <li>
           <a href="/student/meus-recursos" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
             <i class="fas fa-columns text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
@@ -40,10 +35,44 @@
         <li>
           <a href="/student/recursos" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
             <i class="fas fa-columns text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
-            <span class="flex-1 ms-3 whitespace-nowrap">Recursos/Requisições</span>
+            <span class="flex-1 ms-3 whitespace-nowrap">Recursos</span>
+          </a>
+        </li>
+        <li>
+          <a href="/student/requisicoes" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
+            <i class="fas fa-columns text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
+            <span class="flex-1 ms-3 whitespace-nowrap">Requisições</span>
+          </a>
+        </li> -->
+        <li>
+          <a href="/student/inicio" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
+            <i class="fas fa-tachometer-alt text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
+            <span class="ms-3">Inicio</span>
+          </a>
+        </li>
+        <li>
+          <a href="/student/meus-recursos" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
+            <i class="fas fa-columns text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
+            <span class="flex-1 ms-3 whitespace-nowrap">Meus Recursos</span>
+            <span id="contador-meus-recursos" class="ml-auto text-sm font-semibold text-blue-600"></span>
           </a>
         </li>
 
+        <li>
+          <a href="/student/recursos" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
+            <i class="fas fa-columns text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
+            <span class="flex-1 ms-3 whitespace-nowrap">Recursos</span>
+            <span id="contador-recursos" class="ml-auto text-sm font-semibold text-blue-600"></span>
+          </a>
+        </li>
+
+        <li>
+          <a href="/student/requisicoes" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group">
+            <i class="fas fa-columns text-gray-500 group-hover:text-gray-900 w-5 h-5"></i>
+            <span class="flex-1 ms-3 whitespace-nowrap">Requisições</span>
+            <span class="ml-auto text-sm font-semibold text-blue-600"></span>
+          </a>
+        </li>
 
       </ul>
     </div>
@@ -67,7 +96,7 @@
         <div class="relative">
           <button id="profileDropdownButton" class="flex items-center text-sm rounded-full focus:ring-2 focus:ring-gray-300">
             <span class="sr-only">Abrir menu do usuário</span>
-            <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg" alt="Foto do usuário">
+            <!-- <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg" alt="Foto do usuário"> -->
             <span class="ml-2 text-sm font-medium text-gray-700">
               @auth
               {{ Auth::user()->name }}
@@ -127,7 +156,7 @@
           <div class="flex justify-between items-start">
             <div>
               <p class="text-gray-500 font-medium">Meus Recursos</p>
-              <h2 class="text-3xl font-bold text-gray-800 mt-2">5</h2>
+              <h2  id="contador-requisicoes" class="text-3xl font-bold text-gray-800 mt-2">5</h2>
             </div>
             <div class="bg-blue-100 p-3 rounded-full">
               <i class="fas fa-book text-blue-500 text-xl"></i>
@@ -170,27 +199,14 @@
           </p>
         </div>
 
-        <!-- Card 4: Atrasos -->
-        <div id="meus-atrasos" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500 hover:shadow-lg transition-shadow">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-gray-500 font-medium">Meus Atrasos</p>
-              <h2 class="text-3xl font-bold text-gray-800 mt-2">0</h2>
-            </div>
-            <div class="bg-yellow-100 p-3 rounded-full">
-              <i class="fas fa-clock text-yellow-500 text-xl"></i>
-            </div>
-          </div>
-          <p class="text-sm text-gray-500 mt-4">
-            <span class="text-green-500 font-medium"><i class="fas fa-check"></i> Em dia</span>
-          </p>
-        </div>
+     
+        
       </div>
     </section>
 
     <section id="recursos" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
       <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-gray-800">Recursos/Requisições</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Recursos</h1>
 
         <!-- Campo de pesquisa alinhado à direita -->
         <div class="flex items-center">
@@ -220,8 +236,46 @@
                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acções</th>
               </tr>
             </thead>
-            <tbody  class="bg-white divide-y divide-gray-200">
-             
+            <tbody class="bg-white divide-y divide-gray-200">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section id="requisicoes" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Requisções</h1>
+
+        <!-- Campo de pesquisa alinhado à direita -->
+        <div class="flex items-center">
+          <div class="relative">
+            <input type="text" placeholder="Pesquisar estudantes..."
+              class="pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button class="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700 focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-solid border border-[#ddd] rounded-md p-4 bg-white">
+        <div class="overflow-x-auto">
+          <table id="tabela-requisicoes" class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titulo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requisitado Por</th>
+
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acções</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+
             </tbody>
           </table>
         </div>

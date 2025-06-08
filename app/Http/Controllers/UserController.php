@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reservation;
+use App\Models\Resource;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -119,5 +122,20 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function dados()
+    {
+        $user = Auth::user();
+
+        $totalRequisicoes = Reservation::where('user_id', $user->id)->count();
+        $totalRecursosDisponiveis = Resource::count();
+        $totalMeusRecursos = Resource::where('user_id', $user->id)->count();
+
+        return response()->json([
+            'requisicoes' => $totalRequisicoes,
+            'recursos' => $totalRecursosDisponiveis,
+            'meus_recursos' => $totalMeusRecursos
+        ]);
     }
 }

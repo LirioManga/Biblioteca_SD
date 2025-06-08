@@ -49,23 +49,32 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 });
 
+
 Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/student', [UserController::class, 'student'])->name('student');
     Route::get('/student/inicio', [UserController::class, 'student'])->name('student');
+    Route::get('/student/dashboard-dados', [UserController::class, 'student'])->name('student');
+
     Route::get('/student/meus-recursos', [UserController::class, 'student'])->name('student');
     Route::get('/student/recursos', [UserController::class, 'student'])->name('student');
     Route::get('/student/perfil', [UserController::class, 'student'])->name('student');
+    Route::get('/student/requisicoes', [UserController::class, 'student'])->name('student');
 
     /* -------------------------------------- Requisitar Recurso------------------------------- */
     Route::post('/student/recurso/devolver', [ReservationController::class, 'returnResource']);
     Route::post('/student/requisicao/cancelar', [ReservationController::class, 'cancelReservation']);
     Route::post('/student/recurso/requisitar', [ReservationController::class, 'requestResource']);
     Route::post('/student/requisicoes/feitas-por-mim', [ReservationController::class, 'viewMyRequests']);
-    Route::post('/student/requisicoes/para-meus-recursos', [ReservationController::class, 'viewRequestsToMyResources']);
+    Route::get('/student/requisicoes/para-meus-recursos', [ReservationController::class, 'viewRequestsToMyResources']);
     Route::post('/student/recurso/registar', [ResourceController::class, 'store']);
     Route::get('/student/recurso/abrir/{id}', [ResourceController::class, 'openResource']);
     Route::get('/student/recursos/listar', [ResourceController::class, 'myResources']);
     Route::get('/student/recursos/listar-todos', [ResourceController::class, 'listAllResources']);
+    Route::get('/student/recurso/verificar-aprovado/{id}', [ReservationController::class, 'verificarRecursoAprovado']);
+    Route::post('/recursos/requisicao/aprovar', [ReservationController::class, 'aprovarRequisicao']);
+    Route::post('/recursos/requisicao/rejeitar', [ReservationController::class, 'rejeitarRequisicao']);
+
+
 
     Route::post('/student/recurso/actualizar/{id}', [ResourceController::class, 'update']);
     Route::get('/student/recurso/editar/{id}', [ResourceController::class, 'edit']);

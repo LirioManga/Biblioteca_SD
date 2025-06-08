@@ -72,20 +72,7 @@
                                 </a>
                             </span>
                         </li>
-                        <li class="flex items-center gap-4 py-2">
-                            <span class="flex items-center justify-center rounded-full bg-white shadow-sm w-5 h-5 border border-[#e3e3e0]">
-                                <span class="rounded-full bg-[#a08c76] w-2.5 h-2.5"></span>
-                            </span>
-                            <span class="text-primary">
-                                Assista aos nossos
-                                <a href="/tutoriais" class="inline-flex items-center space-x-1 font-medium text-[#8b6b4d] hover:text-[#6d533b] ml-1">
-                                    <span>Tutoriais de Pesquisa</span>
-                                    <svg width="10" height="11" viewBox="0 0 10 11" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-2.5 h-2.5">
-                                        <path d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001" stroke="currentColor" stroke-linecap="square"/>
-                                    </svg>
-                                </a>
-                            </span>
-                        </li>
+                      
                     </ul>
                     <ul class="flex gap-3 text-sm leading-normal">
                         <li>
