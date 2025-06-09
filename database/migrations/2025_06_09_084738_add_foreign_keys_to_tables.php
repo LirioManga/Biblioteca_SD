@@ -11,18 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reservations', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('user_id');     
-            $table->unsignedBigInteger('resource_id');
-            $table->timestamp('requested_at')->useCurrent();
-            $table->timestamp('returned_at')->nullable();
-            $table->enum('status', ['pending', 'returned', 'cancelled', 'approved', 'rejected'])->default('pending');
-        
+        Schema::table('resources', function (Blueprint $table) {
+            $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
+        });
 
+        Schema::table('reservations', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('resource_id')->references('id')->on('resources')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 
@@ -31,6 +26,13 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reservations');
+        Schema::table('resources', function (Blueprint $table) {
+            $table->dropForeign(['owner_id']);
+        });
+
+        Schema::table('reservations', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['resource_id']);
+        });
     }
 };

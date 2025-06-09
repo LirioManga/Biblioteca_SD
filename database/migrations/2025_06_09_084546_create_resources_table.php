@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('resources', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('owner_id');
+            $table->unsignedBigInteger('owner_id');
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('type', ['book', 'article'])->default('book');
-            $table->string('file_path')->nullable();      
+            $table->string('type');
+            $table->string('file_path');
             $table->boolean('available')->default(true);
-            $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
