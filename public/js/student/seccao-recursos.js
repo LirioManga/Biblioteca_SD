@@ -142,7 +142,7 @@ addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const pdfUrl = result.pdf_url; // URL completa para o arquivo PDF
+            const pdfUrl = result.pdf_url; 
 
             // Abre o PDF em uma nova aba
             window.open(pdfUrl, '_blank');
