@@ -198,50 +198,51 @@
             <span class="text-red-500 font-medium"><i class="fas fa-clock"></i> 1</span> para devolver
           </p>
         </div>
-
-     
-        
       </div>
     </section>
 
     <section id="recursos" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-gray-800">Recursos</h1>
+      <div id="recursos-principal">
 
-        <!-- Campo de pesquisa alinhado à direita -->
-        <div class="flex items-center">
-          <div class="relative">
-            <input type="text" placeholder="Pesquisar estudantes..."
-              class="pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <button class="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700 focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="text-2xl font-bold text-gray-800">Recursos</h1>
+  
+          <!-- Campo de pesquisa alinhado à direita -->
+          <div class="flex items-center">
+            <div class="relative">
+              <input type="text" placeholder="Pesquisar estudantes..."
+                class="pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <button class="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+  
+        <div class="border-solid border border-[#ddd] rounded-md p-4 bg-white">
+          <div class="overflow-x-auto">
+            <table id="tabela-recursos-requisicoes" class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titulo</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Disponibilidade</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publicado Por</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requisição</th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acções</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+  
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-
-      <div class="border-solid border border-[#ddd] rounded-md p-4 bg-white">
-        <div class="overflow-x-auto">
-          <table id="tabela-recursos-requisicoes" class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titulo</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Disponibilidade</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publicado Por</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requisição</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acções</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-
-            </tbody>
-          </table>
-        </div>
-      </div>
+      @include('student.partials.openResource')
     </section>
     <section id="requisicoes" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
       <div class="flex justify-between items-center mb-4">
@@ -360,10 +361,12 @@
   </main>
 
   <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
-
+  <!-- <script src="{{ asset('js/pdf.min.js') }}"></script> -->
+ <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script> -->
+  
   <!-- Worker do PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js"></script>
+  <!-- <script src="{{ asset('js/pdf.worker.min.js') }}"></script> -->
+
   <script src="{{ asset('js/student/student.js') }}"></script>
   <script src="{{ asset('js/student/seccao-requisicoes.js') }}"></script>
   <script src="{{ asset('js/student/seccao-recursos.js') }}"></script>

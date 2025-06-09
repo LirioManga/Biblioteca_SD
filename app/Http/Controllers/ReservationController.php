@@ -30,7 +30,7 @@ class ReservationController extends Controller
                 'status' => 'pending',
             ]);
 
-            $resource->available = 0;
+             // $resource->available = 1; 
             $resource->save();
 
             return response()->json([

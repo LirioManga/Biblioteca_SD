@@ -41,3 +41,20 @@ const routes = {
   window.addEventListener("DOMContentLoaded", () => {
     navigate(location.pathname);
   });
+
+
+
+// async function dashboardDados() {
+//     try {
+//         const response = await fetch('/student/dashboard-dados');
+//         const data = await response.json();
+
+//         console.log(data);
+
+//         document.getElementById('contador-requisicoes').textContent = data.requisicoes;
+//         document.getElementById('contador-recursos').textContent = data.recursos;
+//         document.getElementById('contador-meus-recursos').textContent = data.meus_recursos;
+//     } catch (error) {
+//         console.error('Erro ao carregar contadores:', error);
+//     }
+// }

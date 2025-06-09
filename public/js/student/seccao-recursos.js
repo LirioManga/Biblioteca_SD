@@ -1,10 +1,7 @@
 
 addEventListener('DOMContentLoaded', function () {
     carregarMeusRecursos();
-    carregarRecursosDisponiveis();
-    carregarRequisicoesPendentes();
-    dashboardDados();
-   
+    carregarRecursosDisponiveis();   
 
     const pdfViewer = document.getElementById('pdf-viewer');
     const currentPageEl = document.getElementById('current-page');
@@ -22,18 +19,20 @@ addEventListener('DOMContentLoaded', function () {
     let totalPages = 0;
     let zoomLevel = 1.0;
     let pdfDoc = null;
-
     // Função para carregar o PDF
     async function loadPdf(pdfUrl, title) {
         try {
             // Mostrar a seção do leitor e esconder a lista
+           
             document.getElementById("meus-recursos-principal").classList.add("hidden");
             readerSection.classList.remove("hidden");
 
             document.getElementById('resource-title').textContent = title;
+            // const noCacheUrl = pdfUrl + (pdfUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
 
             // Usando PDF.js para renderização mais avançada
             const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            // const loadingTask = pdfjsLib.getDocument(noCacheUrl);
             pdfDoc = await loadingTask.promise;
 
             totalPages = pdfDoc.numPages;
@@ -131,8 +130,9 @@ addEventListener('DOMContentLoaded', function () {
     // Função para abrir um recurso
     window.abrirRecurso = async function (id) {
 
-        document.getElementById("meus-recursos-principal").classList.add("hidden");
-        document.getElementById("abrir-recurso").classList.remove("hidden");
+        // document.getElementById("meus-recursos-principal").classList.add("hidden");
+        // document.getElementById("abrir-recurso").classList.remove("hidden");
+        
         try {
             const response = await fetch(`/student/recurso/abrir/${id}`);
             const result = await response.json();
@@ -142,13 +142,17 @@ addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const recurso = result.data;
-            const pdfUrl = result.pdf_url; // Usando a URL retornada pelo servidor
+            const pdfUrl = result.pdf_url; // URL completa para o arquivo PDF
 
-            console.log('Recurso:', result.title);
-            console.log('PDF URL:', pdfUrl);
+            // Abre o PDF em uma nova aba
+            window.open(pdfUrl, '_blank');
+            // const recurso = result.data;
+            // const pdfUrl = result.pdf_url; // Usando a URL retornada pelo servidor
 
-            await loadPdf(pdfUrl, result.title);
+            // console.log('Recurso:', result.title);
+            // console.log('PDF URL:', pdfUrl);
+
+            // await loadPdf(pdfUrl, result.title);
 
         } catch (error) {
             console.error('Erro ao abrir recurso:', error);
@@ -548,42 +552,7 @@ async function cancelarRequisicao(resourceId) {
     }
 }
 
-async function carregarRequisicoesPendentes() {
-    try {
-        const response = await fetch('/student/requisicoes/para-meus-recursos');
-        const result = await response.json();
-        console.log(result);
-        if (!result.success) {
-            alert('Erro ao carregar requisições: ' + (result.message || 'Erro desconhecido'));
-            return;
-        }
 
-        const tbody = document.querySelector('#tabela-requisicoes tbody');
-        tbody.innerHTML = '';
-
-        if (result.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">Nenhuma requisição pendente.</td></tr>`;
-            return;
-        }
-
-        result.data.forEach(requisicao => {
-            const linha = document.createElement('tr');
-            linha.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap">${requisicao.resource?.title || '--'}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${formatarTipo(requisicao.resource?.type)}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${requisicao.user?.name || '--'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-center">
-                    <button onclick="aprovarRequisicao(${requisicao.id})" class="bg-green-600 text-white px-3 py-1 rounded-md text-xs">Aprovar</button>
-                    <button onclick="rejeitarRequisicao(${requisicao.id})" class="bg-red-600 text-white px-3 py-1 rounded-md text-xs ml-2">Rejeitar</button>
-                </td>
-            `;
-            tbody.appendChild(linha);
-        });
-    } catch (error) {
-        console.error('Erro ao carregar requisições:', error);
-        alert('Erro inesperado ao carregar requisições.');
-    }
-}
 
 
 function getIniciais(nome) {
@@ -619,76 +588,9 @@ async function verRecursoAprovado(id) {
     }
 }
 
-async function aprovarRequisicao(id) {
-    if (!confirm('Tens certeza que queres aprovar esta requisição?')) return;
-
-    try {
-        const response = await fetch('/recursos/requisicao/aprovar', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ id })
-        });
-
-        const result = await response.json();
-        if (!result.success) {
-            alert('Erro ao aprovar requisição: ' + result.message);
-            return;
-        }
-
-        alert('Requisição aprovada com sucesso!');
-        window.location.href = '/student/requisicoes'; 
-    } catch (error) {
-        console.error('Erro ao aprovar requisição:', error);
-        alert('Erro inesperado ao aprovar requisição.');
-    }
-}
-
-async function rejeitarRequisicao(id) {
-    if (!confirm('Tens certeza que queres rejeitar esta requisição?')) return;
-
-    try {
-        const response = await fetch('/recursos/requisicao/rejeitar', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ id })
-        });
-
-        const result = await response.json();
-        if (!result.success) {
-            alert('Erro ao rejeitar requisição: ' + result.message);
-            return;
-        }
-
-        alert('Requisição rejeitada com sucesso!');
-        window.location.href = '/student/requisicoes'; 
-    } catch (error) {
-        console.error('Erro ao rejeitar requisição:', error);
-        alert('Erro inesperado ao rejeitar requisição.');
-    }
-}
 
 function cancelarAdicionarRecurso() {
     document.getElementById("adicionar-recurso").classList.add("hidden");
     document.getElementById("meus-recursos-principal").classList.remove("hidden");
 }
 
-async function dashboardDados() {
-    try {
-        const response = await fetch('/student/dashboard-dados');
-        const data = await response.json();
-
-        console.log(data);
-
-        document.getElementById('contador-requisicoes').textContent = data.requisicoes;
-        document.getElementById('contador-recursos').textContent = data.recursos;
-        document.getElementById('contador-meus-recursos').textContent = data.meus_recursos;
-    } catch (error) {
-        console.error('Erro ao carregar contadores:', error);
-    }
-}

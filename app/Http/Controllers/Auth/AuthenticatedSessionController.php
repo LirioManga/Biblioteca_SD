@@ -26,14 +26,14 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(Request $request)
     {
-        // Log::info('Login attempt', ['email' => $request->email, 'password' => $request->password]);
+        Log::info('Login attempt', ['email' => $request->email, 'password' => $request->password]);
         session()->regenerate();
         try{
            
             // dd($data);
 
             if (Auth::attempt(['name' => $request->name, 'password' => $request->password]) || 
-            Auth::attempt(['email' => $request->name, 'password' => $request->password])) {
+            Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 $user = Auth::user();
                Log::info('User authenticated');
                 // dd(Auth::user());
